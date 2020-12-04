@@ -47,6 +47,11 @@
  */
 - (void)spec;
 
+- (void)recordIssueWithDescription:(NSString *)description
+							inFile:(NSString *)filePath
+							atLine:(NSInteger)lineNumber
+						  expected:(BOOL)expected;
+
 /**
  Returns the currently executing spec. Use in specs that require XCTestCase
  methods, e.g. expectationWithDescription.

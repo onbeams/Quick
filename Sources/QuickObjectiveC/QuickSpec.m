@@ -135,26 +135,39 @@ static QuickSpec *currentSpec = nil;
  and teardown. By default, the failure will be reported as an
  XCTest failure, and the example will be highlighted in Xcode.
  */
-- (void)recordFailureWithDescription:(NSString *)description
-                              inFile:(NSString *)filePath
-                              atLine:(NSUInteger)lineNumber
-                            expected:(BOOL)expected {
-    if (self != [QuickSpec current]) {
-        [[QuickSpec current] recordFailureWithDescription:description
-                                                   inFile:filePath
-                                                   atLine:lineNumber
-                                                 expected:expected];
-        return;
+- (void)recordIssueWithDescription:(NSString *)description
+							inFile:(NSString *)filePath
+							atLine:(NSInteger)lineNumber
+						  expected:(BOOL)expected {
+	if (self != [QuickSpec current]) {
+		[[QuickSpec current] recordIssueWithDescription:description
+												 inFile:filePath
+												 atLine:lineNumber
+											   expected:expected];
+		return;
     }
 
     if (self.example.isSharedExample) {
         filePath = self.example.callsite.file;
         lineNumber = self.example.callsite.line;
     }
-    [super recordFailureWithDescription:description
-                                 inFile:filePath
-                                 atLine:lineNumber
-                               expected:expected];
+#ifdef __IPHONE_14_0
+	XCTSourceCodeLocation *location = [[XCTSourceCodeLocation alloc] initWithFilePath:filePath
+																		   lineNumber:lineNumber];
+	XCTSourceCodeContext *context = [[XCTSourceCodeContext alloc] initWithLocation:location];
+	XCTIssue *issue = [[XCTIssue alloc] initWithType:XCTIssueTypeAssertionFailure
+								  compactDescription:description
+								 detailedDescription:nil
+								   sourceCodeContext:context
+									 associatedError:nil
+										 attachments:@[]];
+	[self recordIssue:issue];
+#else
+	[super recordFailureWithDescription:description
+								 inFile:filePath
+								 atLine:lineNumber
+							   expected:expected];
+#endif
 }
 
 @end

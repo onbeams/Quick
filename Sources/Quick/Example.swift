@@ -90,7 +90,7 @@ final public class Example: _ExampleBase {
             #else
             let file = callsite.file
             #endif
-            QuickSpec.current.recordFailure(
+            QuickSpec.current.recordIssue(
                 withDescription: description,
                 inFile: file,
                 atLine: Int(callsite.line),
